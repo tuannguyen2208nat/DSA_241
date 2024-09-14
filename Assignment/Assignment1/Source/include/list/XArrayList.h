@@ -179,20 +179,23 @@ XArrayList<T>::XArrayList(const XArrayList<T> &list)
   {
     data[i] = list.data[i];
   }
-  count = list.count;
+  this->count = list.count;
+  this->capacity = list.capacity;
 }
 
 template <class T>
 XArrayList<T> &XArrayList<T>::operator=(const XArrayList<T> &list)
 {
   // TODO implement
-  this->count = list.count;
-  this->capacity = list.capacity;
-  data = new T[capacity];
+  delete[] data;
+  count = 0;
+  data = new T[list.capacity];
   for (int i = 0; i < count; i++)
   {
     data[i] = list.data[i];
   }
+  this->count = list.count;
+  this->capacity = list.capacity;
 }
 
 template <class T>
@@ -365,15 +368,16 @@ string XArrayList<T>::toString(string (*item2str)(T &))
 {
   // TODO implement
   string result = "[";
-
   if (count > 0)
   {
-    for (size_t i = 0; i < count - 1; ++i)
+    for (size_t i = 0; i < count; ++i)
     {
       result += item2str ? item2str(data[i]) : converToString(data[i]);
-      result += ", ";
+      if (i < count - 1)
+      {
+        result += ", ";
+      }
     }
-    result += item2str ? item2str(data[count - 1]) : converToString(data[count - 1]);
   }
   result += "]";
   return result;
