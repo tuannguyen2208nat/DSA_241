@@ -13,56 +13,70 @@
 #include "../../include/list/listheader.h"
 #include "../main.hpp"
 
-class UnitTest {
- public:
-  UnitTest() {
+class UnitTest
+{
+public:
+  UnitTest()
+  {
     UnitTest::registerTest("function1", &UnitTest::function1);
     UnitTest::registerTest("function2", &UnitTest::function2);
     // TODO unit new
   }
 
- private:
+private:
   bool function1();
   bool function2();
   // TODO unit new
 
- public:
+public:
   static map<string, bool (UnitTest::*)()> TESTS;
   // ANSI escape codes for colors
   const string green = "\033[32m";
   const string red = "\033[31m";
   const string cyan = "\033[36m";
-  const string reset = "\033[0m";  // To reset to default color
+  const string reset = "\033[0m"; // To reset to default color
 
-  static void registerTest(string name, bool (UnitTest::*function)()) {
-    if (TESTS.find(name) != TESTS.end()) {
+  static void registerTest(string name, bool (UnitTest::*function)())
+  {
+    if (TESTS.find(name) != TESTS.end())
+    {
       throw std::runtime_error("Test with name '" + name + "' already exists.");
     }
     TESTS[name] = function;
   }
 
-  void runTest(const std::string &name) {
+  void runTest(const std::string &name)
+  {
     auto it = TESTS.find(name);
-    if (it != TESTS.end()) {
-      (this->*(it->second))();  // Gọi hàm kiểm tra
-    } else {
+    if (it != TESTS.end())
+    {
+      (this->*(it->second))(); // Gọi hàm kiểm tra
+    }
+    else
+    {
       throw std::runtime_error("Test with name '" + name + "' does not exist.");
     }
   }
 
-  void runAllTests() {
+  void runAllTests()
+  {
     vector<string> fails;
-    for (const auto &test : TESTS) {
-      if (!(this->*(test.second))()) {
+    for (const auto &test : TESTS)
+    {
+      if (!(this->*(test.second))())
+      {
         fails.push_back(test.first);
       }
     }
 
     cout << cyan << "\nResult -------------------------" << reset << endl;
     // Print the results
-    if (fails.empty()) {
+    if (fails.empty())
+    {
       cout << green << "All tests passed!" << reset << endl;
-    } else {
+    }
+    else
+    {
       int totalTests = TESTS.size();
       int failedTests = fails.size();
       int passedTests = totalTests - failedTests;
@@ -71,7 +85,8 @@ class UnitTest {
               ? (static_cast<double>(passedTests) / totalTests) * 100.0
               : 0.0;
       cout << red << "Some tests failed:";
-      for (const auto &fail : fails) {
+      for (const auto &fail : fails)
+      {
         cout << "  " << fail;
       }
       cout << cyan << "\nPass rate: " << passRate << "%" << reset << endl;
@@ -79,4 +94,4 @@ class UnitTest {
   }
 };
 
-#endif  // UNIT_TEST_HPP
+#endif // UNIT_TEST_HPP
