@@ -284,13 +284,14 @@ DLinkedList<T>::DLinkedList(void (*deleteUserData)(DLinkedList<T> *),
 }
 
 template <class T>
-DLinkedList<T>::DLinkedList(const DLinkedList<T> &list) : head(nullptr), tail(nullptr), count(0)
+DLinkedList<T>::DLinkedList(const DLinkedList<T> &list) : head(new Node(T(0))), tail(new Node(T(0))), count(0)
 {
-  // TODO implement
-  Node *temp = list.head;
-  for (int i = 0; i < list.count; i++)
+  head->next = tail;
+  tail->prev = head;
+  Node *temp = list.head->next;
+  while (temp != list.tail)
   {
-    this->add(temp->data, i);
+    this->add(temp->data);
     temp = temp->next;
   }
 }
@@ -299,20 +300,20 @@ template <class T>
 DLinkedList<T> &DLinkedList<T>::operator=(const DLinkedList<T> &list)
 {
   // TODO implement
-  Node *current;
+  Node *current = head->next;
   while (count != 0)
   {
-    current = head;
-    head = head->next;
-    delete current;
+    Node *temp = current;
+    current = current->next;
+    delete temp;
     count--;
   }
-  head = tail = nullptr;
-  count = 0;
-  Node *temp = list.head;
+  head->next = tail;
+  tail->prev = head;
+  Node *temp = list.head->next;
   for (int i = 0; i < list.count; i++)
   {
-    this->add(temp->data, i);
+    this->add(i, temp->data);
     temp = temp->next;
   }
 }
@@ -324,11 +325,13 @@ DLinkedList<T>::~DLinkedList()
   Node *temp;
   while (count != 0)
   {
-    temp = head;
-    head = head->next;
+    temp = head->next;
+    head->next = temp->next;
     delete temp;
     count--;
   }
+  delete head;
+  delete tail;
   head = tail = nullptr;
   count = 0;
 }
