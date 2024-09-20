@@ -165,9 +165,17 @@ XArrayList<T>::XArrayList(void (*deleteUserData)(XArrayList<T> *),
   // TODO implement
   this->deleteUserData = deleteUserData;
   this->itemEqual = itemEqual;
-  this->capacity = capacity;
+  if (capacity == 0)
+  {
+    this->capacity = 10;
+  }
+  else
+  {
+    this->capacity = capacity;
+  }
+
   this->count = 0;
-  this->data = new T[capacity];
+  this->data = new T[this->capacity];
 }
 
 template <class T>
@@ -230,7 +238,6 @@ void XArrayList<T>::add(int index, T e)
   {
     throw std::out_of_range("Index is out of range!");
   }
-
   if (count >= capacity)
   {
     resize(capacity * 2);
