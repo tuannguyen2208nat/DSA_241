@@ -1,11 +1,2 @@
-# Ignore C++ source files
-*.cpp
-
-# Ignore C++ executable files
-*.exec
-
 # Ignore specific folder
-Source/test/
-
-# Ignore .vscode folder
-.vscode/
+Source/.vscode/
