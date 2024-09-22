@@ -324,14 +324,7 @@ template <class T>
 DLinkedList<T>::~DLinkedList()
 {
     // TODO implement
-    Node *temp;
-    while (count != 0)
-    {
-        temp = head->next;
-        head->next = temp->next;
-        delete temp;
-        count--;
-    }
+    clear();
     delete head;
     delete tail;
     head = tail = nullptr;
@@ -478,6 +471,10 @@ template <class T>
 void DLinkedList<T>::clear()
 {
     // TODO implement
+    if (this->deleteUserData)
+    {
+        this->deleteUserData(this);
+    }
     Node *current = head->next;
     Node *nextNode;
 
@@ -540,42 +537,15 @@ template <class T>
 bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
 {
     // TODO implement
-    int index = -1;
-    Node *temp = head->next;
-    if constexpr (std::is_pointer_v<T>)
+    for (Iterator it = begin(); it != end(); it++)
     {
-        for (int i = 0; i < count; i++)
+        if (equals(*it, item, itemEqual))
         {
-            if (*temp->data == *item)
-            {
-                index = i;
-                break;
-            }
-            temp = temp->next;
+            it.remove(removeItemData);
+            return true;
         }
     }
-    else
-    {
-        index = indexOf(item);
-    }
-
-    if (index == -1)
-    {
-        return false;
-    }
-
-    temp = head->next;
-    for (int i = 0; i <= index; i++)
-    {
-        temp = temp->next;
-    }
-
-    if (removeItemData != 0)
-    {
-        removeItemData(temp->data);
-    }
-    removeAt(index);
-    return true;
+    return false;
 }
 
 template <class T>

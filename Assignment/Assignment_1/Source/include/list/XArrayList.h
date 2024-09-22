@@ -210,13 +210,15 @@ template <class T>
 XArrayList<T>::~XArrayList()
 {
     // TODO implement
-    if (count != 0)
+    if (deleteUserData)
     {
-        delete[] data;
-        data = nullptr;
-        count = 0;
-        capacity = 10;
+        deleteUserData(this);
     }
+
+    delete[] data;
+    data = nullptr;
+    count = 0;
+    capacity = 10;
 }
 
 template <class T>
@@ -318,12 +320,15 @@ template <class T>
 void XArrayList<T>::clear()
 {
     // TODO implement
-    if (count != 0)
+    if (deleteUserData)
     {
-        delete[] data;
-        data = nullptr;
-        count = 0;
+        deleteUserData(this);
     }
+
+    delete[] data;
+    data = nullptr;
+    count = 0;
+
     capacity = 10;
     data = new T[capacity];
 }
