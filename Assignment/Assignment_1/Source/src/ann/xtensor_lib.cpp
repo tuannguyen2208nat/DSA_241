@@ -42,7 +42,7 @@ xt::xarray<double> matmul_on_stack(xt::xarray<double> X, xt::xarray<double> Y)
     /*TODO: Your code is here*/
 }
 
-ulong_array confusion_matrix(ulong_array y_true, ulong_array y_pred)
+ulong_array confusion_matrix(xt::xarray<ulong> y_true, xt::xarray<ulong> y_pred)
 {
     /*TODO: Your code is here*/
 }

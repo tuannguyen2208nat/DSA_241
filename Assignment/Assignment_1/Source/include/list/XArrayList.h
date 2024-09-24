@@ -5,7 +5,6 @@
 #ifndef XARRAYLIST_H
 #define XARRAYLIST_H
 #include <memory.h>
-
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -80,13 +79,11 @@ public:
     Iterator end() { return Iterator(this, count); }
 
 protected:
-    void checkIndex(int index);     // check validity of index for accessing
-    void ensureCapacity(int index); // auto-allocate if needed
+    void checkIndex(int index);
+    void ensureCapacity(int index);
     void copyFrom(const XArrayList<T> &list);
     void removeInternalData();
 
-    //! FUNTION STATIC
-protected:
     static bool equals(T &lhs, T &rhs, bool (*itemEqual)(T &, T &))
     {
         if (itemEqual == 0)
@@ -130,7 +127,7 @@ public:
             T item = pList->removeAt(cursor);
             if (removeItemData != 0)
                 removeItemData(item);
-            cursor -= 1; // MUST keep index of previous, for ++ later
+            cursor -= 1;
         }
 
         T &operator*() { return pList->data[cursor]; }
@@ -162,18 +159,9 @@ template <class T>
 XArrayList<T>::XArrayList(void (*deleteUserData)(XArrayList<T> *),
                           bool (*itemEqual)(T &, T &), int capacity)
 {
-    // TODO implement
     this->deleteUserData = deleteUserData;
     this->itemEqual = itemEqual;
-    if (capacity == 0)
-    {
-        this->capacity = 10;
-    }
-    else
-    {
-        this->capacity = capacity;
-    }
-
+    this->capacity = capacity == 0 ? 10 : capacity;
     this->count = 0;
     this->data = new T[this->capacity];
 }
@@ -195,15 +183,17 @@ template <class T>
 XArrayList<T> &XArrayList<T>::operator=(const XArrayList<T> &list)
 {
     // TODO implement
+    if (this == &list)
+        return *this;
     delete[] data;
-    count = 0;
     data = new T[list.capacity];
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < list.count; i++)
     {
         data[i] = list.data[i];
     }
     this->count = list.count;
     this->capacity = list.capacity;
+    return *this;
 }
 
 template <class T>
@@ -214,11 +204,7 @@ XArrayList<T>::~XArrayList()
     {
         deleteUserData(this);
     }
-
     delete[] data;
-    data = nullptr;
-    count = 0;
-    capacity = 10;
 }
 
 template <class T>
@@ -274,27 +260,12 @@ template <class T>
 bool XArrayList<T>::removeItem(T item, void (*removeItemData)(T))
 {
     // TODO implement
-    int index = -1;
-    if constexpr (std::is_pointer_v<T>)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            if (*data[i] == *item)
-            {
-                index = i;
-                break;
-            }
-        }
-    }
-    else
-    {
-        index = indexOf(item);
-    }
+    int index = indexOf(item);
     if (index == -1)
     {
         return false;
     }
-    if (removeItemData != 0)
+    if (removeItemData != nullptr)
     {
         removeItemData(data[index]);
     }
@@ -326,11 +297,8 @@ void XArrayList<T>::clear()
     }
 
     delete[] data;
-    data = nullptr;
-    count = 0;
-
-    capacity = 10;
     data = new T[capacity];
+    count = 0;
 }
 
 template <class T>
@@ -350,8 +318,10 @@ int XArrayList<T>::indexOf(T item)
     // TODO implement
     for (int i = 0; i < count; i++)
     {
-        if (data[i] == item)
+        if (equals(data[i], item, itemEqual))
+        {
             return i;
+        }
     }
     return -1;
 }
@@ -360,22 +330,7 @@ template <class T>
 bool XArrayList<T>::contains(T item)
 {
     // TODO implement
-    for (int i = 0; i < count; i++)
-    {
-        if (this->equals(data[i], item, itemEqual))
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-template <class T>
-std::string converToString(T &item)
-{
-    std::stringstream ss;
-    ss << item;
-    return ss.str();
+    return indexOf(item) != -1;
 }
 
 template <class T>
@@ -383,17 +338,28 @@ string XArrayList<T>::toString(string (*item2str)(T &))
 {
     // TODO implement
     string result = "[";
+    std::stringstream ss;
     if (count > 0)
     {
-        for (size_t i = 0; i < count; ++i)
+        for (int i = 0; i < count; ++i)
         {
-            result += item2str ? item2str(data[i]) : converToString(data[i]);
+            if (item2str)
+            {
+                result += item2str(data[i]);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << data[i];
+                result += ss.str();
+            }
             if (i < count - 1)
             {
                 result += ", ";
             }
         }
     }
+
     result += "]";
     return result;
 }
@@ -411,10 +377,6 @@ void XArrayList<T>::checkIndex(int index)
      * preventing invalid index operations.
      */
     // TODO implement
-    if (index < 0 || index >= count)
-    {
-        throw std::out_of_range("Index is out of range!");
-    }
 }
 
 template <class T>

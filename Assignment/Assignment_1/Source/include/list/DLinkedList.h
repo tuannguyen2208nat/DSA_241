@@ -275,8 +275,8 @@ DLinkedList<T>::DLinkedList(void (*deleteUserData)(DLinkedList<T> *),
     // TODO implement
     this->deleteUserData = deleteUserData;
     this->itemEqual = itemEqual;
-    head = new Node(T(0));
-    tail = new Node(T(0));
+    head = new Node(T());
+    tail = new Node(T());
 
     head->next = tail;
     tail->prev = head;
@@ -285,7 +285,7 @@ DLinkedList<T>::DLinkedList(void (*deleteUserData)(DLinkedList<T> *),
 }
 
 template <class T>
-DLinkedList<T>::DLinkedList(const DLinkedList<T> &list) : head(new Node(T(0))), tail(new Node(T(0))), count(0)
+DLinkedList<T>::DLinkedList(const DLinkedList<T> &list) : head(new Node(T())), tail(new Node(T())), count(0)
 {
     // TODO implement
     head->next = tail;
@@ -565,14 +565,6 @@ bool DLinkedList<T>::contains(T item)
 }
 
 template <class T>
-std::string convertToString(T &item)
-{
-    std::stringstream ss;
-    ss << item;
-    return ss.str();
-}
-
-template <class T>
 string DLinkedList<T>::toString(string (*item2str)(T &))
 {
     // TODO implement
@@ -582,7 +574,16 @@ string DLinkedList<T>::toString(string (*item2str)(T &))
         Node *temp = head->next;
         while (temp != tail)
         {
-            result += item2str ? item2str(temp->data) : convertToString(temp->data);
+            if (item2str)
+            {
+                result += item2str(temp->data);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << temp->data;
+                result += ss.str();
+            }
             temp = temp->next;
             if (temp != tail)
             {
