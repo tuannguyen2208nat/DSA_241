@@ -302,22 +302,18 @@ template <class T>
 DLinkedList<T> &DLinkedList<T>::operator=(const DLinkedList<T> &list)
 {
     // TODO implement
-    Node *current = head->next;
-    while (count != 0)
+    if (this == &list)
     {
-        Node *temp = current;
-        current = current->next;
-        delete temp;
-        count--;
+        return *this;
     }
-    head->next = tail;
-    tail->prev = head;
+    clear();
     Node *temp = list.head->next;
     for (int i = 0; i < list.count; i++)
     {
         this->add(i, temp->data);
         temp = temp->next;
     }
+    return *this;
 }
 
 template <class T>
@@ -524,7 +520,7 @@ int DLinkedList<T>::indexOf(T item)
     Node *temp = head->next;
     for (int i = 0; i < count; i++)
     {
-        if (temp->data == item)
+        if (equals(temp->data, item, itemEqual))
         {
             return i;
         }
