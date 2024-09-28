@@ -296,6 +296,8 @@ DLinkedList<T>::DLinkedList(const DLinkedList<T> &list) : head(new Node(T())), t
         this->add(temp->data);
         temp = temp->next;
     }
+    deleteUserData = list.deleteUserData;
+    itemEqual = list.itemEqual;
 }
 
 template <class T>
@@ -313,6 +315,8 @@ DLinkedList<T> &DLinkedList<T>::operator=(const DLinkedList<T> &list)
         this->add(i, temp->data);
         temp = temp->next;
     }
+    deleteUserData = list.deleteUserData;
+    itemEqual = list.itemEqual;
     return *this;
 }
 

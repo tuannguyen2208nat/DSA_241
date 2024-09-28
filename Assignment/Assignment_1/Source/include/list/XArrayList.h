@@ -159,6 +159,7 @@ template <class T>
 XArrayList<T>::XArrayList(void (*deleteUserData)(XArrayList<T> *),
                           bool (*itemEqual)(T &, T &), int capacity)
 {
+    // TODO implement
     this->deleteUserData = deleteUserData;
     this->itemEqual = itemEqual;
     this->capacity = capacity == 0 ? 10 : capacity;
@@ -175,8 +176,10 @@ XArrayList<T>::XArrayList(const XArrayList<T> &list)
     {
         data[i] = list.data[i];
     }
-    this->count = list.count;
-    this->capacity = list.capacity;
+    count = list.count;
+    capacity = list.capacity;
+    deleteUserData = list.deleteUserData;
+    itemEqual = list.itemEqual;
 }
 
 template <class T>
@@ -184,15 +187,19 @@ XArrayList<T> &XArrayList<T>::operator=(const XArrayList<T> &list)
 {
     // TODO implement
     if (this == &list)
+    {
         return *this;
+    }
     delete[] data;
     data = new T[list.capacity];
     for (int i = 0; i < list.count; i++)
     {
         data[i] = list.data[i];
     }
-    this->count = list.count;
-    this->capacity = list.capacity;
+    count = list.count;
+    capacity = list.capacity;
+    deleteUserData = list.deleteUserData;
+    itemEqual = list.itemEqual;
     return *this;
 }
 
