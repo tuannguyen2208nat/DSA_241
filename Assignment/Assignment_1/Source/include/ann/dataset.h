@@ -60,9 +60,9 @@ public:
     {
         // TODO implement
         this->data = data;
-        this->label = label;
         data_shape = data.shape();
-        label_shape = label.shape();
+        this->label = label;
+        this->label_shape = label.shape();
     }
 
     int len()
@@ -73,13 +73,20 @@ public:
 
     DataLabel<DType, LType> getitem(int index)
     {
-        // TODO implement
         if (index < 0 || index >= len())
         {
             throw std::out_of_range("Index is out of range!");
         }
-        auto data_1 = xt::view(data, index, xt::all());
-        auto label_1 = xt::view(label, index, xt::all());
+        xt::xarray<DType> data_1 = xt::view(data, index, xt::all());
+        xt::xarray<LType> label_1;
+        if (label.shape().size() == 0)
+        {
+            label_1 = label;
+        }
+        else
+        {
+            label_1 = xt::view(label, index, xt::all());
+        }
         return DataLabel<DType, LType>(data_1, label_1);
     }
 

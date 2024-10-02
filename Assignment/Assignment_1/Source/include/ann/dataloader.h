@@ -29,26 +29,24 @@ public:
         this->batch_size = batch_size;
         this->shuffle = shuffle;
         this->drop_last = drop_last;
-
-        indices = xt::arange<int>(0, int(ptr_dataset->len()));
-
+        int size = 0;
+        this->indices = xt::arange<int>(0, int(ptr_dataset->len()));
         if (shuffle)
         {
-            auto &engine = xt::random::get_default_random_engine();
+            xt::random::default_engine_type engine(0);
             xt::random::shuffle(indices, engine);
         }
-        if (int(ptr_dataset->len()) >= batch_size)
+        if (!drop_last)
         {
-            num_of_batch = int(ptr_dataset->len()) / batch_size;
-            if ((int(ptr_dataset->len()) % batch_size != 0) && drop_last)
-            {
-                num_of_batch += 1;
-            }
+            size = int(ptr_dataset->len());
+            this->num_of_batch = int(ptr_dataset->len()) >= batch_size ? int(ptr_dataset->len()) / batch_size : 1;
         }
         else
         {
-            num_of_batch = 1;
+            this->num_of_batch = int(ptr_dataset->len()) >= batch_size ? int(ptr_dataset->len()) / batch_size : 0;
+            size = int(ptr_dataset->len()) >= batch_size ? int(num_of_batch * batch_size) : 0;
         }
+        this->indices = xt::view(this->indices, xt::range(0, size));
     }
 
     virtual ~DataLoader()
@@ -128,50 +126,61 @@ public:
 
         Batch<DType, LType> operator*() const
         {
-            TensorDataset<DType, LType> *tensor_dataset_ptr = dynamic_cast<TensorDataset<DType, LType> *>(ptr_dataset);
-
-            auto data_shape = tensor_dataset_ptr->get_data_shape();
-            auto label_shape = tensor_dataset_ptr->get_label_shape();
-
-            int start, end;
-            if ((current_index == (num_of_batch)-1))
+            // TODO implement
+            if (indices.size() > 0)
             {
-                start = current_index * batch_size;
-                end = indices.size();
-                int size = indices.size() - start;
-                data_shape[0] = size;
-                label_shape[0] = size;
-            }
-            else
-            {
-                start = current_index * batch_size;
-                end = start + batch_size;
-                data_shape[0] = batch_size;
-                label_shape[0] = batch_size;
-            }
+                TensorDataset<DType, LType> *tensor_dataset_ptr = dynamic_cast<TensorDataset<DType, LType> *>(ptr_dataset);
 
-            xt::xarray<DType> data = xt::empty<DType>(data_shape);
-            xt::xarray<LType> label = xt::empty<LType>(label_shape);
+                xt::svector<unsigned long> data_shape = tensor_dataset_ptr->get_data_shape();
+                xt::svector<unsigned long> label_shape = tensor_dataset_ptr->get_label_shape();
 
-            if (end > indices.size())
-            {
-                end = indices.size();
-            }
-
-            for (int i = start; i < end; i++)
-            {
-                auto data_label = tensor_dataset_ptr->getitem(indices[i]);
-                if (data_label.getData().size() > 0)
+                int start, end;
+                if ((current_index == (num_of_batch)-1))
                 {
-                    xt::view(data, i - start) = data_label.getData();
+                    start = current_index * batch_size;
+                    end = indices.size();
+                    int size = indices.size() - start;
+                    data_shape[0] = size;
+                    label_shape[0] = size;
+                }
+                else
+                {
+                    start = current_index * batch_size;
+                    end = start + batch_size;
+                    data_shape[0] = batch_size;
+                    label_shape[0] = batch_size;
                 }
 
-                if (data_label.getLabel().size() > 0)
+                xt::xarray<DType> data = xt::empty<DType>(data_shape);
+                xt::xarray<LType> label = xt::empty<LType>(label_shape);
+
+                if (end > indices.size())
                 {
-                    xt::view(label, i - start) = data_label.getLabel();
+                    end = indices.size();
                 }
+                for (int i = start; i < end; i++)
+                {
+                    DataLabel<DType, LType> data_label = tensor_dataset_ptr->getitem(indices[i]);
+                    if (data_shape.size() > 0)
+                    {
+                        xt::view(data, i - start) = data_label.getData();
+                    }
+                    else
+                    {
+                        data = xt::empty<DType>({});
+                    }
+                    if (label_shape.size() > 0)
+                    {
+                        xt::view(label, i - start) = data_label.getLabel();
+                    }
+                    else
+                    {
+                        label = xt::empty<LType>({});
+                    }
+                }
+                return Batch<DType, LType>(data, label);
             }
-            return Batch<DType, LType>(data, label);
+            return Batch<DType, LType>(xt::xarray<DType>(), xt::xarray<LType>());
         }
     };
 };
