@@ -226,7 +226,7 @@ public:
         {
             pNode->next->prev = pNode->prev;
             pNode->prev->next = pNode->next;
-            Node *pPrev = pNode->next; // MUST prev, so iterator-- will go to end
+            Node *pPrev = pNode->next; // MUST prev, so iterator++ will go to start
             if (removeItemData != 0)
                 removeItemData(pNode->data);
             delete pNode;
@@ -244,14 +244,14 @@ public:
             return pNode != iterator.pNode;
         }
 
-        // Prefix -- overload
+        // Prefix ++ overload
         BWDIterator &operator++()
         {
             pNode = pNode->prev;
             return *this;
         }
 
-        // Postfix -- overload
+        // Postfix ++ overload
         BWDIterator operator++(int)
         {
             BWDIterator iterator = *this;

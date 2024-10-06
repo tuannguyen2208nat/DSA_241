@@ -130,14 +130,16 @@ public:
             {
                 return Batch<DType, LType>(xt::xarray<DType>(), xt::xarray<LType>());
             }
+
             TensorDataset<DType, LType> *tensor_dataset_ptr = dynamic_cast<TensorDataset<DType, LType> *>(ptr_dataset);
 
             xt::svector<unsigned long> data_shape = tensor_dataset_ptr->get_data_shape();
             xt::svector<unsigned long> label_shape = tensor_dataset_ptr->get_label_shape();
 
             int start = current_index * batch_size;
-            int end = (start + batch_size) > indices.size() ? indices.size() : start + batch_size;
-            int size = (start + batch_size) > indices.size() ? indices.size() - start : batch_size;
+            int end = current_index == (num_of_batch)-1 ? indices.size() : start + batch_size;
+            int size = current_index == (num_of_batch)-1 ? indices.size() - start : batch_size;
+
             data_shape[0] = label_shape[0] = size;
 
             xt::xarray<DType> data = xt::empty<DType>(data_shape);
