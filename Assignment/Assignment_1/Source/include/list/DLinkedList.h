@@ -245,17 +245,17 @@ public:
         }
 
         // Prefix -- overload
-        BWDIterator &operator--()
+        BWDIterator &operator++()
         {
             pNode = pNode->prev;
             return *this;
         }
 
         // Postfix -- overload
-        BWDIterator operator--(int)
+        BWDIterator operator++(int)
         {
             BWDIterator iterator = *this;
-            --*this;
+            ++*this;
             return iterator;
         }
     };
@@ -270,18 +270,13 @@ using List = DLinkedList<T>;
 
 template <class T>
 DLinkedList<T>::DLinkedList(void (*deleteUserData)(DLinkedList<T> *),
-                            bool (*itemEqual)(T &, T &))
+                            bool (*itemEqual)(T &, T &)) : head(new Node(T())), tail(new Node(T())), count(0)
 {
     // TODO implement
     this->deleteUserData = deleteUserData;
     this->itemEqual = itemEqual;
-    head = new Node(T());
-    tail = new Node(T());
-
     head->next = tail;
     tail->prev = head;
-
-    count = 0;
 }
 
 template <class T>
@@ -312,7 +307,7 @@ DLinkedList<T> &DLinkedList<T>::operator=(const DLinkedList<T> &list)
     Node *temp = list.head->next;
     for (int i = 0; i < list.count; i++)
     {
-        this->add(i, temp->data);
+        this->add(temp->data);
         temp = temp->next;
     }
     deleteUserData = list.deleteUserData;
@@ -419,21 +414,18 @@ T DLinkedList<T>::removeAt(int index)
         head->next = tail;
         tail->prev = head;
     }
-
     else if (index == 0)
     {
         deleteNode = head->next;
         head->next = deleteNode->next;
         head->next->prev = head;
     }
-
     else if (index == count - 1)
     {
         deleteNode = tail->prev;
         tail->prev = deleteNode->prev;
         deleteNode->prev->next = tail;
     }
-
     else
     {
         Node *temp = head->next;
@@ -475,6 +467,7 @@ void DLinkedList<T>::clear()
     {
         this->deleteUserData(this);
     }
+
     Node *current = head->next;
     Node *nextNode;
 
@@ -484,6 +477,7 @@ void DLinkedList<T>::clear()
         delete current;
         current = nextNode;
     }
+
     head->next = tail;
     tail->prev = head;
     count = 0;
@@ -497,7 +491,9 @@ T &DLinkedList<T>::get(int index)
     {
         throw std::out_of_range("Index is out of range!");
     }
+
     Node *temp;
+
     if (index < count / 2)
     {
         temp = head->next;
@@ -514,6 +510,7 @@ T &DLinkedList<T>::get(int index)
             temp = temp->prev;
         }
     }
+
     return temp->data;
 }
 

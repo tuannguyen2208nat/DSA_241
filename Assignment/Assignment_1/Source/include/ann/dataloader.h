@@ -81,7 +81,6 @@ public:
         Iterator(Dataset<DType, LType> *ptr_dataset, int batch_size, const xt::xarray<int> &indices, int num_of_batch, bool begin = true)
             : ptr_dataset(ptr_dataset), batch_size(batch_size), num_of_batch(num_of_batch), indices(indices)
         {
-
             if (begin)
             {
                 current_index = 0;
@@ -127,60 +126,44 @@ public:
         Batch<DType, LType> operator*() const
         {
             // TODO implement
-            if (indices.size() > 0)
+            if (indices.size() == 0)
             {
-                TensorDataset<DType, LType> *tensor_dataset_ptr = dynamic_cast<TensorDataset<DType, LType> *>(ptr_dataset);
+                return Batch<DType, LType>(xt::xarray<DType>(), xt::xarray<LType>());
+            }
+            TensorDataset<DType, LType> *tensor_dataset_ptr = dynamic_cast<TensorDataset<DType, LType> *>(ptr_dataset);
 
-                xt::svector<unsigned long> data_shape = tensor_dataset_ptr->get_data_shape();
-                xt::svector<unsigned long> label_shape = tensor_dataset_ptr->get_label_shape();
+            xt::svector<unsigned long> data_shape = tensor_dataset_ptr->get_data_shape();
+            xt::svector<unsigned long> label_shape = tensor_dataset_ptr->get_label_shape();
 
-                int start, end;
-                if ((current_index == (num_of_batch)-1))
+            int start = current_index * batch_size;
+            int end = (start + batch_size) > indices.size() ? indices.size() : start + batch_size;
+            int size = (start + batch_size) > indices.size() ? indices.size() - start : batch_size;
+            data_shape[0] = label_shape[0] = size;
+
+            xt::xarray<DType> data = xt::empty<DType>(data_shape);
+            xt::xarray<LType> label = xt::empty<LType>(label_shape);
+
+            for (int i = start; i < end; i++)
+            {
+                DataLabel<DType, LType> data_label = tensor_dataset_ptr->getitem(indices[i]);
+                if (data_shape.size() > 0)
                 {
-                    start = current_index * batch_size;
-                    end = indices.size();
-                    int size = indices.size() - start;
-                    data_shape[0] = size;
-                    label_shape[0] = size;
+                    xt::view(data, i - start) = data_label.getData();
                 }
                 else
                 {
-                    start = current_index * batch_size;
-                    end = start + batch_size;
-                    data_shape[0] = batch_size;
-                    label_shape[0] = batch_size;
+                    data = xt::empty<DType>({});
                 }
-
-                xt::xarray<DType> data = xt::empty<DType>(data_shape);
-                xt::xarray<LType> label = xt::empty<LType>(label_shape);
-
-                if (end > indices.size())
+                if (label_shape.size() > 0)
                 {
-                    end = indices.size();
+                    xt::view(label, i - start) = data_label.getLabel();
                 }
-                for (int i = start; i < end; i++)
+                else
                 {
-                    DataLabel<DType, LType> data_label = tensor_dataset_ptr->getitem(indices[i]);
-                    if (data_shape.size() > 0)
-                    {
-                        xt::view(data, i - start) = data_label.getData();
-                    }
-                    else
-                    {
-                        data = xt::empty<DType>({});
-                    }
-                    if (label_shape.size() > 0)
-                    {
-                        xt::view(label, i - start) = data_label.getLabel();
-                    }
-                    else
-                    {
-                        label = xt::empty<LType>({});
-                    }
+                    label = xt::empty<LType>({});
                 }
-                return Batch<DType, LType>(data, label);
             }
-            return Batch<DType, LType>(xt::xarray<DType>(), xt::xarray<LType>());
+            return Batch<DType, LType>(data, label);
         }
     };
 };
