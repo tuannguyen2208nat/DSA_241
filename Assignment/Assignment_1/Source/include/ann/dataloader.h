@@ -31,21 +31,23 @@ public:
         this->drop_last = drop_last;
         int size = 0;
         this->indices = xt::arange<int>(0, int(ptr_dataset->len()));
+        this->num_of_batch = int(ptr_dataset->len()) >= batch_size ? int(ptr_dataset->len()) / batch_size : 0;
+
         if (shuffle)
         {
             xt::random::default_engine_type engine(0);
             xt::random::shuffle(indices, engine);
         }
+
         if (!drop_last)
         {
             size = int(ptr_dataset->len());
-            this->num_of_batch = int(ptr_dataset->len()) >= batch_size ? int(ptr_dataset->len()) / batch_size : 1;
         }
         else
         {
-            this->num_of_batch = int(ptr_dataset->len()) >= batch_size ? int(ptr_dataset->len()) / batch_size : 0;
             size = int(ptr_dataset->len()) >= batch_size ? int(num_of_batch * batch_size) : 0;
         }
+
         this->indices = xt::view(this->indices, xt::range(0, size));
     }
 
