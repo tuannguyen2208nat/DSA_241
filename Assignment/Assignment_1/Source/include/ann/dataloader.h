@@ -35,8 +35,7 @@ public:
 
         if (shuffle)
         {
-            xt::random::default_engine_type engine(0);
-            xt::random::shuffle(indices, engine);
+            xt::random::shuffle(indices);
         }
 
         if (!drop_last)
