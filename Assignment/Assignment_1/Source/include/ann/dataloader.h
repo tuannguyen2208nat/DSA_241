@@ -22,7 +22,7 @@ private:
 
 public:
     DataLoader(Dataset<DType, LType> *ptr_dataset, int batch_size,
-               bool shuffle = true, bool drop_last = false)
+               bool shuffle = true, bool drop_last = false, int seed = -1)
     {
         // TODO implement
         this->ptr_dataset = ptr_dataset;
@@ -35,7 +35,15 @@ public:
 
         if (shuffle)
         {
-            xt::random::shuffle(indices);
+            if (seed >= 0)
+            {
+                xt::random::seed(seed);
+                xt::random::shuffle(indices);
+            }
+            else
+            {
+                xt::random::shuffle(indices);
+            }
         }
 
         if (!drop_last)

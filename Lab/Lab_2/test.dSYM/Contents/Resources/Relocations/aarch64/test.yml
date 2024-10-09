@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/lilnat/HK241/DSA/HCMUT/Lab/Lab_2/test'
+relocations:     []
+...

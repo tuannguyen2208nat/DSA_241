@@ -1,55 +1,42 @@
 #include <iostream>
 #include <stack>
 #include <vector>
+#include <string>
+#include <queue>
 
 using namespace std;
 
-vector<int> stock_span(const vector<int> &ns)
+int sumOfMaxSubarray(vector<int> &nums, int k)
 {
     // STUDENT ANSWER
-    if (ns.size() == 0)
+    int max = 0;
+    int val = 0;
+    queue<int> qu;
+    for (int i = 0; i < int(nums.size()); i++)
     {
-        return ns;
-    }
-    stack<int> st;
-    vector<int> get_value;
-
-    for (int i = 0; i < ns.size(); i++)
-    {
-        st.push(ns[i]);
-    }
-    while (!st.empty())
-    {
-        int val = 1;
-        int i = st.size() - 1;
-        while (i >= 0)
+        val += nums[i];
+        qu.push(nums[i]);
+        if (qu.size() == k)
         {
-            if (st.top() < ns[i])
+            if (max < val)
             {
-                cout << "break" << endl;
-                st.pop();
-                break;
+                max = val;
             }
-            cout << val << " ";
-            val += 1;
-            i--;
+            val -= qu.front();
+            qu.pop();
         }
-        result.push(val);
     }
-    while (!result.empty())
-    {
-        get_value.push_back(result.top());
-        result.pop();
-    }
-    return get_value;
+    return max;
 }
 
 int main()
 {
-    std::vector<int> st = {100, 80, 60, 70, 60, 75, 85};
-    st = stock_span(st);
-    for (int i = 0; i < st.size(); i++)
-    {
-        std::cout << st[i] << " ";
-    }
+    // vector<int> nums{1, 2, 4, 3, 6};
+    // int k = 3;
+    // cout << sumOfMaxSubarray(nums, k);
+    // cout << endl;
+    vector<int> nums{8016};
+    int k = 1;
+    cout << sumOfMaxSubarray(nums, k);
+    return 0;
 }
