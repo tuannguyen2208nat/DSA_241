@@ -7,7 +7,6 @@
 #include <memory.h>
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include <type_traits>
 
 #include "list/IList.h"
@@ -28,21 +27,14 @@ protected:
 
     void resize(int new_capacity)
     {
-        try
+        T *newData = new T[new_capacity];
+        for (int i = 0; i < count; ++i)
         {
-            T *newData = new T[new_capacity];
-            for (int i = 0; i < count; ++i)
-            {
-                newData[i] = data[i];
-            }
-            delete[] data;
-            data = newData;
-            capacity = new_capacity;
+            newData[i] = data[i];
         }
-        catch (const std::bad_alloc &)
-        {
-            throw std::bad_alloc();
-        }
+        delete[] data;
+        data = newData;
+        capacity = new_capacity;
     }
 
 public:
