@@ -81,7 +81,7 @@ public:
     private:
         Dataset<DType, LType> *ptr_dataset;
         int batch_size;
-        size_t current_index;
+        int current_index;
         xt::xarray<int> indices;
         int num_of_batch;
 
