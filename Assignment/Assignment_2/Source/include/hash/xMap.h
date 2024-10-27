@@ -232,6 +232,8 @@ xMap<K, V>::xMap(const xMap<K, V> &map)
 {
     // TODO YOUR CODE IS HERE
     this->copyMapFrom(map);
+    this->deleteKeys = nullptr;
+    this->deleteValues = nullptr;
 }
 
 template <class K, class V>
@@ -244,6 +246,8 @@ xMap<K, V> &xMap<K, V>::operator=(const xMap<K, V> &map)
     }
     this->removeInternalData();
     this->copyMapFrom(map);
+    this->deleteKeys = nullptr;
+    this->deleteValues = nullptr;
     return *this;
 }
 
