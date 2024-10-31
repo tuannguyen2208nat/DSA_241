@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/class.h to edit this template
  */
 
-/* 
+/*
  * File:   LossLayer.h
  * Author: ltsach
  *
@@ -14,23 +14,25 @@
 #define LOSSLAYER_H
 #include "tensor/xtensor_lib.h"
 
-enum LossReduction{
+enum LossReduction
+{
     REDUCE_NONE = 0,
     REDUCE_SUM,
     REDUCE_MEAN
 };
 
-class ILossLayer {
+class ILossLayer
+{
 public:
-    ILossLayer(LossReduction reduction=REDUCE_MEAN);
-    ILossLayer(const ILossLayer& orig);
+    ILossLayer(LossReduction reduction = REDUCE_MEAN);
+    ILossLayer(const ILossLayer &orig);
     virtual ~ILossLayer();
-    
-    virtual double forward(xt::xarray<double> X, xt::xarray<double> t)=0;
-    virtual xt::xarray<double> backward()=0;
-private:
+
+    virtual double forward(xt::xarray<double> X, xt::xarray<double> t) = 0;
+    virtual xt::xarray<double> backward() = 0;
+
+protected:
     LossReduction m_eReduction;
 };
 
 #endif /* LOSSLAYER_H */
-

@@ -5,7 +5,8 @@
         "ostream": "cpp",
         "iostream": "cpp",
         "string": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "__locale": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

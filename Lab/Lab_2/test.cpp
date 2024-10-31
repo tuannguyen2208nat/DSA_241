@@ -6,37 +6,38 @@
 
 using namespace std;
 
-int sumOfMaxSubarray(vector<int> &nums, int k)
+void interleaveQueue(queue<int> &q)
 {
-    // STUDENT ANSWER
-    int max = 0;
-    int val = 0;
-    queue<int> qu;
-    for (int i = 0; i < int(nums.size()); i++)
+    queue<int> st;
+    int halfnum = q.size() / 2;
+    for (int i = 0; i < halfnum; i++)
     {
-        val += nums[i];
-        qu.push(nums[i]);
-        if (qu.size() == k)
-        {
-            if (max < val)
-            {
-                max = val;
-            }
-            val -= qu.front();
-            qu.pop();
-        }
+        st.push(q.front());
+        q.pop();
     }
-    return max;
+    while (!st.empty())
+    {
+        q.push(st.front());
+        st.pop();
+        q.push(q.front());
+        q.pop();
+    }
 }
-
 int main()
 {
-    // vector<int> nums{1, 2, 4, 3, 6};
-    // int k = 3;
-    // cout << sumOfMaxSubarray(nums, k);
-    // cout << endl;
-    vector<int> nums{8016};
-    int k = 1;
-    cout << sumOfMaxSubarray(nums, k);
-    return 0;
+    queue<int> q;
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i++)
+    {
+        int element;
+        cin >> element;
+        q.push(element);
+    }
+    interleaveQueue(q);
+    while (!q.empty())
+    {
+        cout << q.front() << ' ';
+        q.pop();
+    }
 }

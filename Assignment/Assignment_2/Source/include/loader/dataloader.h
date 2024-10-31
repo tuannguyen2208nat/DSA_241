@@ -1,8 +1,8 @@
 
 #ifndef DATALOADER_H
 #define DATALOADER_H
-#include "ann/dataset.h"
-#include "ann/xtensor_lib.h"
+#include "tensor/xtensor_lib.h"
+#include "loader/dataset.h"
 
 using namespace std;
 
@@ -17,22 +17,27 @@ private:
     int batch_size;
     bool shuffle;
     bool drop_last;
+    int nbatch;
+    ulong_tensor item_indices;
+    int m_seed;
     xt::xarray<int> indices;
     int num_of_batch;
 
 public:
-    DataLoader(Dataset<DType, LType> *ptr_dataset, int batch_size,
-               bool shuffle = true, bool drop_last = false, int seed = -1)
+    DataLoader(Dataset<DType, LType> *ptr_dataset,
+               int batch_size, bool shuffle = true,
+               bool drop_last = false, int seed = -1)
+        : ptr_dataset(ptr_dataset),
+          batch_size(batch_size),
+          shuffle(shuffle),
+          drop_last(drop_last),
+          m_seed(seed)
     {
-        // TODO implement
-        this->ptr_dataset = ptr_dataset;
-        this->batch_size = batch_size;
-        this->shuffle = shuffle;
-        this->drop_last = drop_last;
+        nbatch = ptr_dataset->len() / batch_size;
+        item_indices = xt::arange(0, ptr_dataset->len());
         int size = 0;
         this->indices = xt::arange<int>(0, int(ptr_dataset->len()));
         this->num_of_batch = int(ptr_dataset->len()) >= batch_size ? int(ptr_dataset->len()) / batch_size : 0;
-
         if (shuffle)
         {
             if (seed >= 0)
@@ -57,25 +62,40 @@ public:
 
         this->indices = xt::view(this->indices, xt::range(0, size));
     }
+    virtual ~DataLoader() {}
 
-    virtual ~DataLoader()
-    {
-        // TODO implement
-    }
+    // New method: from V2: begin
+    int get_batch_size() { return batch_size; }
+    int get_sample_count() { return ptr_dataset->len(); }
+    int get_total_batch() { return int(ptr_dataset->len() / batch_size); }
 
+    // New method: from V2: end
+    /////////////////////////////////////////////////////////////////////////
+    // The section for supporting the iteration and for-each to DataLoader //
+    /// START: Section                                                     //
+    /////////////////////////////////////////////////////////////////////////
+public:
     Iterator begin()
     {
-        // TODO implement
+        // YOUR CODE IS HERE
         return Iterator(ptr_dataset, batch_size, indices, num_of_batch, true);
     }
-
     Iterator end()
     {
-        // TODO implement
+        // YOUR CODE IS HERE
         return Iterator(ptr_dataset, batch_size, indices, num_of_batch, false);
     }
 
-    // TODO implement forech
+    // BEGIN of Iterator
+
+    // YOUR CODE IS HERE: to define iterator
+
+    // END of Iterator
+
+    /////////////////////////////////////////////////////////////////////////
+    // The section for supporting the iteration and for-each to DataLoader //
+    /// END: Section                                                       //
+    /////////////////////////////////////////////////////////////////////////
     class Iterator
     {
     private:
