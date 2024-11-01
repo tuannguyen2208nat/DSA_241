@@ -1,15 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/file.h to edit this template
- */
-
-/*
- * File:   dataset.h
- * Author: ltsach
- *
- * Created on September 2, 2024, 3:59 PM
- */
-
 #ifndef DATASET_H
 #define DATASET_H
 #include "tensor/xtensor_lib.h"

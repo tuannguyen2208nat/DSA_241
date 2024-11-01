@@ -281,7 +281,7 @@ V xMap<K, V>::put(K key, V value)
     Entry *newEntry = new Entry(key, value);
     temp.add(newEntry);
     this->ensureLoadFactor(++count);
-    return V();
+    return value;
 }
 
 template <class K, class V>
@@ -648,7 +648,7 @@ void xMap<K, V>::copyMapFrom(const xMap<K, V> &map)
 {
     //! removeInternalData(); ???
 
-    this->capacity = map.capacity;
+    this->capacity = 10;
     this->count = 0;
     this->table = new DLinkedList<Entry *>[map.capacity];
 
