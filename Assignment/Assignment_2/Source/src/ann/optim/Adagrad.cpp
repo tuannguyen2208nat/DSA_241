@@ -3,27 +3,32 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/class.cc to edit this template
  */
 
-/* 
+/*
  * File:   Adagrad.cpp
  * Author: ltsach
- * 
+ *
  * Created on September 5, 2024, 5:30 PM
  */
 
 #include "optim/Adagrad.h"
 #include "optim/AdaParamGroup.h"
 
-Adagrad::Adagrad(double learning_rate, double decay): 
-    IOptimizer(learning_rate), m_decay(decay){
+Adagrad::Adagrad(double learning_rate, double decay) : IOptimizer(learning_rate), m_decay(decay)
+{
 }
 
-Adagrad::Adagrad(const Adagrad& orig) {
+Adagrad::Adagrad(const Adagrad &orig)
+{
 }
 
-Adagrad::~Adagrad() {
+Adagrad::~Adagrad()
+{
 }
 
-IParamGroup* Adagrad::create_group(string name){
-    //YOUR CODE IS HERE
+IParamGroup *Adagrad::create_group(string name)
+{
+    // YOUR CODE IS HERE
+    AdaParamGroup *pGroup = new AdaParamGroup(m_decay);
+    m_pGroupMap->put(name, pGroup);
+    return pGroup;
 }
-
