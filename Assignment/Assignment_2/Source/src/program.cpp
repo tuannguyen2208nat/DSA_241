@@ -20,16 +20,16 @@ namespace fs = std::filesystem;
 #include "modelzoo/twoclasses.h"
 #include "modelzoo/threeclasses.h"
 
+int main(int argc, char **argv)
+{
+    // dataloader:
+    // case_data_wo_label_1();
+    // case_data_wi_label_1();
+    // case_batch_larger_nsamples();
 
-int main(int argc, char** argv) {
-    //dataloader:
-    //case_data_wo_label_1();
-    //case_data_wi_label_1();
-    //case_batch_larger_nsamples();
-    
-    //Classification:
+    // Classification:
     twoclasses_classification();
-    //threeclasses_classification();
- 
+    threeclasses_classification();
+
     return 0;
 }

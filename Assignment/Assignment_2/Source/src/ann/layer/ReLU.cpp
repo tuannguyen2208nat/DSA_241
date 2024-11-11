@@ -34,15 +34,13 @@ ReLU::~ReLU()
 xt::xarray<double> ReLU::forward(xt::xarray<double> X)
 {
     // YOUR CODE IS HERE
-    xt::xarray<double> result = xt::maximum(X, 0.0);
     m_aMask = (X >= 0);
-    return result;
+    return xt::where(m_aMask, X, 0.0);
 }
 xt::xarray<double> ReLU::backward(xt::xarray<double> DY)
 {
     // YOUR CODE IS HERE
-    xt::xarray<double> result = xt::where(m_aMask, DY, 0);
-    return result;
+    return xt::where(m_aMask, DY, 0.0);
 }
 
 string ReLU::get_desc()

@@ -105,6 +105,8 @@ double_tensor MLPClassifier::predict(
         {
             results += this->forward(data);
         }
+        // nsamples += data.shape()[0];
+        // batch_idx++;
     }
     cout << "Prediction: End" << endl;
 
@@ -132,8 +134,8 @@ double_tensor MLPClassifier::evaluate(DataLoader<double, double> *pLoader)
         double_tensor X = batch.getData();
         double_tensor t = batch.getLabel();
         double_tensor Y = this->forward(X);
-        double_tensor y_true = xt::argmax(t, 1);
-        double_tensor y_pred = xt::argmax(Y, 1);
+        ulong_tensor y_true = xt::argmax(t, 1);
+        ulong_tensor y_pred = xt::argmax(Y, 1);
         meter.accumulate(y_true, y_pred);
     }
 

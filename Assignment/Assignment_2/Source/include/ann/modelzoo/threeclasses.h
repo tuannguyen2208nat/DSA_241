@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/file.h to edit this template
  */
 
-/* 
+/*
  * File:   theeclasses.h
  * Author: ltsach
  *
@@ -28,33 +28,32 @@ using namespace std;
 #include "optim/Adagrad.h"
 #include "optim/Adam.h"
 
-void threeclasses_classification(){
+void threeclasses_classification()
+{
     DSFactory factory("./config.txt");
-    xmap<string, TensorDataset<double, double>*>* pMap = factory.get_datasets_3cc();
-    TensorDataset<double, double>* train_ds = pMap->get("train_ds");
-    TensorDataset<double, double>* valid_ds = pMap->get("valid_ds");
-    TensorDataset<double, double>* test_ds = pMap->get("test_ds");
+    xmap<string, TensorDataset<double, double> *> *pMap = factory.get_datasets_3cc();
+    TensorDataset<double, double> *train_ds = pMap->get("train_ds");
+    TensorDataset<double, double> *valid_ds = pMap->get("valid_ds");
+    TensorDataset<double, double> *test_ds = pMap->get("test_ds");
     DataLoader<double, double> train_loader(train_ds, 50, true, false);
     DataLoader<double, double> valid_loader(valid_ds, 50, false, false);
     DataLoader<double, double> test_loader(test_ds, 50, false, false);
-    
+
     int nClasses = 3;
-    ILayer* layers[] = {
-                    new FCLayer(2, 50, true),
-                    new ReLU(),
-                    new FCLayer(50, 20, true),
-                    new ReLU(),
-                    new FCLayer(20, nClasses, true),
-                    new Softmax()
-    };
-    MLPClassifier model("./config.txt", "3c-classification", layers, sizeof(layers)/sizeof(ILayer*));
-    
-    
-    Adam optim(1e-3, 0.9, 0.99);
+    ILayer *layers[] = {
+        new FCLayer(2, 50, true),
+        new ReLU(),
+        new FCLayer(50, 20, true),
+        new ReLU(),
+        new FCLayer(20, nClasses, true),
+        new Softmax()};
+    MLPClassifier model("./config.txt", "3c-classification", layers, sizeof(layers) / sizeof(ILayer *));
+
+    SGD optim(2e-3);
     CrossEntropy loss;
     ClassMetrics metrics(nClasses);
-    
-    //train + eval
+
+    // train + eval
     model.compile(&optim, &loss, &metrics);
     model.fit(&train_loader, &valid_loader, 1000);
     string base_path = "./models";
@@ -62,8 +61,8 @@ void threeclasses_classification(){
     double_tensor eval_rs = model.evaluate(&test_loader);
     cout << "Evaluation result on the testing dataset: " << endl;
     cout << eval_rs << endl;
-    
-    //load + eval
+
+    // load + eval
     MLPClassifier pretrained1("./config.txt");
     pretrained1.load(base_path + "/" + "3c-classification-1", true);
     double_tensor eval_rs1 = pretrained1.evaluate(&test_loader);
@@ -72,4 +71,3 @@ void threeclasses_classification(){
 }
 
 #endif /* THEECLASSES_H */
-

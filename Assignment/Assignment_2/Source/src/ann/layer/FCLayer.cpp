@@ -168,44 +168,35 @@ xt::xarray<double> FCLayer::forward(xt::xarray<double> X)
     {
         m_aCached_X = X;
     }
-
-    if (X.shape()[0] == 1)
+    xt::xarray<double> Y;
+    if (X.shape().size() == 1)
     {
-        xt::xarray<double> Y = xt::linalg::dot(m_aWeights, X);
-        if (m_bUse_Bias)
-        {
-            Y += xt::broadcast(m_aBias, Y.shape());
-        }
-        return Y;
+
+        Y = xt::linalg::dot(m_aWeights, X);
+    }
+    else
+    {
+        Y = xt::linalg::tensordot(X, xt::transpose(m_aWeights), 1);
     }
 
-    xt::xarray<double> Y = xt::linalg::dot(X, xt::transpose(m_aWeights));
     if (m_bUse_Bias)
     {
         Y += xt::broadcast(m_aBias, Y.shape());
     }
     return Y;
 }
+
 xt::xarray<double> FCLayer::backward(xt::xarray<double> DY)
 {
     // YOUR CODE IS HERE
-
-    if (m_trainable)
-    {
-        m_unSample_Counter++;
-    }
-
-    m_aGrad_W = xt::linalg::dot(xt::transpose(m_aCached_X), DY);
-    // m_aGrad_W = xt::linalg::dot(DY, xt::transpose(m_aCached_X)); //Công thức
-
+    m_unSample_Counter += 1;
     if (m_bUse_Bias)
     {
-        m_aGrad_b = xt::sum(DY, -1);
+        m_aGrad_b = xt::sum(DY, {0});
     }
-
-    return xt::linalg::dot(DY, m_aWeights);
-
-    // return DY * m_aWeights;
+    xt::xarray<double> dW_batch = outer_stack(DY, m_aCached_X);
+    m_aGrad_W = xt::sum(dW_batch, {0});
+    return xt::linalg::tensordot(DY, m_aWeights, 1);
 }
 
 int FCLayer::register_params(IParamGroup *ptr_group)

@@ -45,7 +45,7 @@ void IModel::fit(DataLoader<double, double> *pTrainLoader,
             // //(1) FORWARD-Pass
             // // YOUR CODE IS HERE
             double_tensor Y = this->forward(X);
-            double batch_loss = m_pLossLayer->forward(X, t);
+            double batch_loss = m_pLossLayer->forward(Y, t);
 
             // //(2) BACKWARD-Pass
             // // YOUR CODE IS HERE
@@ -53,6 +53,7 @@ void IModel::fit(DataLoader<double, double> *pTrainLoader,
 
             // //(3) UPDATE learnable parameters
             // // YOUR CODE IS HERE
+            m_pOptimizer->step();
 
             // Record the performance for each batch
             ulong_tensor y_true = xt::argmax(t, 1);

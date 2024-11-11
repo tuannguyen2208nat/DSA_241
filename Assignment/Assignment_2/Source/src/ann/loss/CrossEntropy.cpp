@@ -30,7 +30,7 @@ double CrossEntropy::forward(xt::xarray<double> X, xt::xarray<double> t)
     // YOUR CODE IS HERE
     m_aCached_Ypred = X;
     m_aYtarget = t;
-    return cross_entropy(m_aCached_Ypred, m_aYtarget, this->m_eReduction);
+    return cross_entropy(m_aCached_Ypred, m_aYtarget, this->m_eReduction == REDUCE_MEAN);
 }
 xt::xarray<double> CrossEntropy::backward()
 {
@@ -39,7 +39,7 @@ xt::xarray<double> CrossEntropy::backward()
     xt::xarray<double> grad = -(m_aYtarget / (m_aCached_Ypred + EPSILON));
     if (m_eReduction == REDUCE_MEAN)
     {
-        grad /= static_cast<double>(m_aCached_Ypred.shape(0));
+        grad /= m_aCached_Ypred.shape()[0];
     }
     return grad;
 }

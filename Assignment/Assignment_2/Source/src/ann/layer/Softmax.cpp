@@ -35,17 +35,14 @@ Softmax::~Softmax()
 xt::xarray<double> Softmax::forward(xt::xarray<double> X)
 {
     // YOUR CODE IS HERE
-    m_aCached_Y = softmax(X, m_nAxis);
-    return m_aCached_Y;
+    return m_aCached_Y = softmax(X, m_nAxis);
 }
 xt::xarray<double> Softmax::backward(xt::xarray<double> DY)
 {
     // YOUR CODE IS HERE
-    xt::xarray<double> diag_Y = xt::diag(m_aCached_Y);
-    xt::xarray<double> outer_product = xt::linalg::outer(m_aCached_Y, m_aCached_Y);
-    xt::xarray<double> jacobian = diag_Y - outer_product;
-    xt::xarray<double> result = xt::linalg::dot(jacobian, DY);
-    return result;
+    xt::xarray<double> outer_product = outer_stack(m_aCached_Y, m_aCached_Y);
+    xt::xarray<double> jacobian = diag_stack(m_aCached_Y) - outer_product;
+    return matmul_on_stack(jacobian, DY);
 }
 
 string Softmax::get_desc()
