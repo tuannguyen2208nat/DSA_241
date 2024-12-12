@@ -46,23 +46,21 @@ namespace xt
     class xexpression
     {
     public:
-
         using derived_type = D;
 
-        derived_type& derived_cast() & noexcept;
-        const derived_type& derived_cast() const& noexcept;
+        derived_type &derived_cast() & noexcept;
+        const derived_type &derived_cast() const & noexcept;
         derived_type derived_cast() && noexcept;
 
     protected:
-
         xexpression() = default;
         ~xexpression() = default;
 
-        xexpression(const xexpression&) = default;
-        xexpression& operator=(const xexpression&) = default;
+        xexpression(const xexpression &) = default;
+        xexpression &operator=(const xexpression &) = default;
 
-        xexpression(xexpression&&) = default;
-        xexpression& operator=(xexpression&&) = default;
+        xexpression(xexpression &&) = default;
+        xexpression &operator=(xexpression &&) = default;
     };
 
     /************************************
@@ -78,28 +76,26 @@ namespace xt
     namespace detail
     {
         template <class E>
-        xshared_expression<E> make_xshared_impl(xsharable_expression<E>&&);
+        xshared_expression<E> make_xshared_impl(xsharable_expression<E> &&);
     }
 
     template <class D>
     class xsharable_expression : public xexpression<D>
     {
     protected:
-
         xsharable_expression();
         ~xsharable_expression() = default;
 
-        xsharable_expression(const xsharable_expression&) = default;
-        xsharable_expression& operator=(const xsharable_expression&) = default;
+        xsharable_expression(const xsharable_expression &) = default;
+        xsharable_expression &operator=(const xsharable_expression &) = default;
 
-        xsharable_expression(xsharable_expression&&) = default;
-        xsharable_expression& operator=(xsharable_expression&&) = default;
+        xsharable_expression(xsharable_expression &&) = default;
+        xsharable_expression &operator=(xsharable_expression &&) = default;
 
     private:
-
         std::shared_ptr<D> p_shared;
 
-        friend xshared_expression<D> detail::make_xshared_impl<D>(xsharable_expression<D>&&);
+        friend xshared_expression<D> detail::make_xshared_impl<D>(xsharable_expression<D> &&);
     };
 
     /******************************
@@ -114,18 +110,18 @@ namespace xt
      * Returns a reference to the actual derived type of the xexpression.
      */
     template <class D>
-    inline auto xexpression<D>::derived_cast() & noexcept -> derived_type&
+    inline auto xexpression<D>::derived_cast() & noexcept -> derived_type &
     {
-        return *static_cast<derived_type*>(this);
+        return *static_cast<derived_type *>(this);
     }
 
     /**
      * Returns a constant reference to the actual derived type of the xexpression.
      */
     template <class D>
-    inline auto xexpression<D>::derived_cast() const& noexcept -> const derived_type&
+    inline auto xexpression<D>::derived_cast() const & noexcept -> const derived_type &
     {
-        return *static_cast<const derived_type*>(this);
+        return *static_cast<const derived_type *>(this);
     }
 
     /**
@@ -134,7 +130,7 @@ namespace xt
     template <class D>
     inline auto xexpression<D>::derived_cast() && noexcept -> derived_type
     {
-        return *static_cast<derived_type*>(this);
+        return *static_cast<derived_type *>(this);
     }
 
     //@}
@@ -260,7 +256,7 @@ namespace xt
     template <class E>
     struct xclosure<xshared_expression<E>, std::enable_if_t<true>>
     {
-        using type = xshared_expression<E>;  // force copy
+        using type = xshared_expression<E>; // force copy
     };
 
     template <class E>
@@ -285,9 +281,9 @@ namespace xt
     };
 
     template <class E>
-    struct const_xclosure<xshared_expression<E>&, std::enable_if_t<true>>
+    struct const_xclosure<xshared_expression<E> &, std::enable_if_t<true>>
     {
-        using type = xshared_expression<E>;  // force copy
+        using type = xshared_expression<E>; // force copy
     };
 
     template <class E>
@@ -428,7 +424,7 @@ namespace xt
         return m_ptr->template name<L>();                                                         \
     }                                                                                             \
     template <layout_type L = XTENSOR_DEFAULT_TRAVERSAL, class S>                                 \
-    auto name(const S& shape) const noexcept                                                      \
+    auto name(const S &shape) const noexcept                                                      \
         -> decltype(std::declval<xtl::constify_t<E>>().template name<L>(shape))                   \
     {                                                                                             \
         return m_ptr->template name<L>();                                                         \
@@ -436,7 +432,7 @@ namespace xt
 
 #define XTENSOR_FORWARD_ITERATOR_METHOD(name)                                                 \
     template <layout_type L = XTENSOR_DEFAULT_TRAVERSAL, class S>                             \
-    auto name(const S& shape) noexcept -> decltype(std::declval<E>().template name<L>(shape)) \
+    auto name(const S &shape) noexcept -> decltype(std::declval<E>().template name<L>(shape)) \
     {                                                                                         \
         return m_ptr->template name<L>();                                                     \
     }                                                                                         \
@@ -508,7 +504,6 @@ namespace xt
     class xshared_expression : public xexpression<xshared_expression<E>>
     {
     public:
-
         using base_class = xexpression<xshared_expression<E>>;
 
         using value_type = typename E::value_type;
@@ -543,7 +538,7 @@ namespace xt
         static constexpr layout_type static_layout = E::static_layout;
         static constexpr bool contiguous_layout = static_layout != layout_type::dynamic;
 
-        explicit xshared_expression(const std::shared_ptr<E>& ptr);
+        explicit xshared_expression(const std::shared_ptr<E> &ptr);
         long use_count() const noexcept;
 
         template <class... Args>
@@ -587,13 +582,13 @@ namespace xt
         XTENSOR_FORWARD_CONST_METHOD(linear_crend)
 
         template <class T = E>
-        std::enable_if_t<has_strides<T>::value, const inner_strides_type&> strides() const
+        std::enable_if_t<has_strides<T>::value, const inner_strides_type &> strides() const
         {
             return m_ptr->strides();
         }
 
         template <class T = E>
-        std::enable_if_t<has_strides<T>::value, const inner_strides_type&> backstrides() const
+        std::enable_if_t<has_strides<T>::value, const inner_strides_type &> backstrides() const
         {
             return m_ptr->backstrides();
         }
@@ -617,13 +612,13 @@ namespace xt
         }
 
         template <class T = E>
-        std::enable_if_t<has_data_interface<T>::value, typename T::storage_type&> storage() noexcept
+        std::enable_if_t<has_data_interface<T>::value, typename T::storage_type &> storage() noexcept
         {
             return m_ptr->storage();
         }
 
         template <class T = E>
-        std::enable_if_t<has_data_interface<T>::value, const typename T::storage_type&> storage() const noexcept
+        std::enable_if_t<has_data_interface<T>::value, const typename T::storage_type &> storage() const noexcept
         {
             return m_ptr->storage();
         }
@@ -641,46 +636,45 @@ namespace xt
         }
 
         template <class S>
-        bool broadcast_shape(S& shape, bool reuse_cache = false) const
+        bool broadcast_shape(S &shape, bool reuse_cache = false) const
         {
             return m_ptr->broadcast_shape(shape, reuse_cache);
         }
 
         template <class S>
-        bool has_linear_assign(const S& strides) const noexcept
+        bool has_linear_assign(const S &strides) const noexcept
         {
             return m_ptr->has_linear_assign(strides);
         }
 
         template <class S>
-        auto stepper_begin(const S& shape) noexcept -> decltype(std::declval<E>().stepper_begin(shape))
+        auto stepper_begin(const S &shape) noexcept -> decltype(std::declval<E>().stepper_begin(shape))
         {
             return m_ptr->stepper_begin(shape);
         }
 
         template <class S>
-        auto stepper_end(const S& shape, layout_type l) noexcept
+        auto stepper_end(const S &shape, layout_type l) noexcept
             -> decltype(std::declval<E>().stepper_end(shape, l))
         {
             return m_ptr->stepper_end(shape, l);
         }
 
         template <class S>
-        auto stepper_begin(const S& shape) const noexcept
+        auto stepper_begin(const S &shape) const noexcept
             -> decltype(std::declval<const E>().stepper_begin(shape))
         {
-            return static_cast<const E*>(m_ptr.get())->stepper_begin(shape);
+            return static_cast<const E *>(m_ptr.get())->stepper_begin(shape);
         }
 
         template <class S>
-        auto stepper_end(const S& shape, layout_type l) const noexcept
+        auto stepper_end(const S &shape, layout_type l) const noexcept
             -> decltype(std::declval<const E>().stepper_end(shape, l))
         {
-            return static_cast<const E*>(m_ptr.get())->stepper_end(shape, l);
+            return static_cast<const E *>(m_ptr.get())->stepper_end(shape, l);
         }
 
     private:
-
         std::shared_ptr<E> m_ptr;
     };
 
@@ -692,7 +686,7 @@ namespace xt
      * @sa make_xshared
      */
     template <class E>
-    inline xshared_expression<E>::xshared_expression(const std::shared_ptr<E>& ptr)
+    inline xshared_expression<E>::xshared_expression(const std::shared_ptr<E> &ptr)
         : m_ptr(ptr)
     {
     }
@@ -710,7 +704,7 @@ namespace xt
     namespace detail
     {
         template <class E>
-        inline xshared_expression<E> make_xshared_impl(xsharable_expression<E>&& expr)
+        inline xshared_expression<E> make_xshared_impl(xsharable_expression<E> &&expr)
         {
             if (expr.p_shared == nullptr)
             {
@@ -727,12 +721,11 @@ namespace xt
      * @return xshared expression
      */
     template <class E>
-    inline xshared_expression<E> make_xshared(xexpression<E>&& expr)
+    inline xshared_expression<E> make_xshared(xexpression<E> &&expr)
     {
         static_assert(
             is_xsharable_expression<E>::value,
-            "make_shared requires E to inherit from xsharable_expression"
-        );
+            "make_shared requires E to inherit from xsharable_expression");
         return detail::make_xshared_impl(std::move(expr.derived_cast()));
     }
 
@@ -744,7 +737,7 @@ namespace xt
      * @sa make_xshared
      */
     template <class E>
-    inline auto share(xexpression<E>& expr)
+    inline auto share(xexpression<E> &expr)
     {
         return make_xshared(std::move(expr));
     }
@@ -757,7 +750,7 @@ namespace xt
      * @sa make_xshared
      */
     template <class E>
-    inline auto share(xexpression<E>&& expr)
+    inline auto share(xexpression<E> &&expr)
     {
         return make_xshared(std::move(expr));
     }

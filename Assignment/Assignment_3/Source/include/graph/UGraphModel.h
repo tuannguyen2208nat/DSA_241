@@ -15,7 +15,6 @@
 #define UGRAPHMODEL_H
 
 #include "graph/AbstractGraph.h"
-#include "stacknqueue/PriorityQueue.h"
 
 //////////////////////////////////////////////////////////////////////
 ///////////// UGraphModel: Undirected Graph Model ////////////////////
@@ -38,14 +37,67 @@ public:
     void connect(T from, T to, float weight = 0)
     {
         // TODO
+        typename AbstractGraph<T>::VertexNode *fromNode = this->getVertexNode(from);
+        if (!fromNode)
+            throw VertexNotFoundException(this->vertex2str(from));
+        typename AbstractGraph<T>::VertexNode *toNode = this->getVertexNode(to);
+        if (!toNode)
+            throw VertexNotFoundException(this->vertex2str(to));
+        fromNode->connect(toNode, weight);
+        if (!fromNode->equals(toNode))
+        {
+            toNode->connect(fromNode, weight);
+        }
     }
     void disconnect(T from, T to)
     {
         // TODO
+        typename AbstractGraph<T>::VertexNode *fromNode = this->getVertexNode(from);
+        if (!fromNode)
+            throw VertexNotFoundException(this->vertex2str(from));
+        typename AbstractGraph<T>::VertexNode *toNode = this->getVertexNode(to);
+        if (!toNode)
+            throw VertexNotFoundException(this->vertex2str(to));
+
+        if (fromNode->getEdge(toNode))
+        {
+            fromNode->removeTo(toNode);
+            if (!fromNode->equals(toNode))
+            {
+                toNode->removeTo(fromNode);
+            }
+        }
+        else
+        {
+            typename AbstractGraph<T>::Edge result(fromNode, toNode);
+            throw EdgeNotFoundException(this->edge2Str(result));
+        }
     }
     void remove(T vertex)
     {
         // TODO
+        typename AbstractGraph<T>::VertexNode *fromNode = this->getVertexNode(vertex);
+        if (!fromNode)
+            throw VertexNotFoundException(this->vertex2str(vertex));
+        DLinkedList<T> outEdge = this->getOutwardEdges(vertex);
+        for (auto it = outEdge.begin(); it != outEdge.end(); ++it)
+        {
+            typename AbstractGraph<T>::VertexNode *toNode = this->getVertexNode(*it);
+            if (fromNode->equals(toNode))
+            {
+                fromNode->removeTo(toNode);
+            }
+            else
+            {
+                fromNode->removeTo(toNode);
+                toNode->removeTo(fromNode);
+            }
+        }
+        if (!this->nodeList.removeItem(fromNode))
+        {
+            throw std::runtime_error("Failed to remove vertex from nodeList");
+        }
+        delete fromNode;
     }
     static UGraphModel<T> *create(
         T *vertices, int nvertices, Edge<T> *edges, int nedges,
@@ -53,6 +105,16 @@ public:
         string (*vertex2str)(T &))
     {
         // TODO
+        UGraphModel<T> *a = new UGraphModel(vertexEQ, vertex2str);
+        for (int i = 0; i < nvertices; i++)
+        {
+            a->add(vertices[i]);
+        }
+        for (int i = 0; i < nedges; i++)
+        {
+            a->connect(edges[i].from, edges[i].to, edges[i].weight);
+        }
+        return a;
     }
 };
 
