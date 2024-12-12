@@ -26,7 +26,7 @@ public:
 
                                         };
 
-    DLinkedListSE(const DLinkedList<T> &list)
+    DLinkedListSE(const DLinkedList<T> &list) : DLinkedList<T>(list)
     {
         this->copyFrom(list);
     }

@@ -115,10 +115,10 @@ public:
     {
         // TODO
         VertexNode *fromNode = getVertexNode(from);
-        VertexNode *toNode = getVertexNode(to);
         if (!fromNode)
             throw VertexNotFoundException(vertex2str(from));
-        else if (!toNode)
+        VertexNode *toNode = getVertexNode(to);
+        if (!toNode)
             throw VertexNotFoundException(vertex2str(to));
 
         Edge *edge = fromNode->getEdge(toNode);
