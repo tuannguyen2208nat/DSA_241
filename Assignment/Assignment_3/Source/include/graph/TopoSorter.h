@@ -83,7 +83,7 @@ public:
     DLinkedList<T> dfsSort(bool sorted = true)
     {
         // TODO
-        DLinkedListSE<T> List_sort(graph->vertices());
+        DLinkedListSE<T> List_sort(listOfZeroInDegrees());
         if (sorted)
         {
             List_sort.sort();
